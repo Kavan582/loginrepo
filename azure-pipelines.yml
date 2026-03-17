@@ -9,11 +9,28 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  azureSubscription: 'azure-conn'
+  appName: 'demologindash'
+
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    npm install
+    npm run build || echo "No build step"
+  displayName: 'Install and build'
+
+- script: |
+    zip -r app.zip .
+  displayName: 'Archive project'
+
+- task: AzureWebApp@1
+  displayName: 'Deploy to Azure App Service'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    appName: $(appName)
+    package: app.zip
