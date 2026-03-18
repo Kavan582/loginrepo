@@ -10,15 +10,13 @@ variables:
 
 steps:
 - script: |
-    echo "=== Repo structure ==="
     find . -type f | grep -v ".git"
   displayName: 'Show repo files'
 
 - script: |
-    cd "DASHBORD PAGE"
-    zip -r ../app.zip .
-    cd ..
-    echo "=== Zip contents ==="
+    cd "DASHBORD PAGE/login page"
+    zip -r ../../app.zip .
+    cd ../..
     unzip -l app.zip
   displayName: 'Zip static site'
 
