@@ -1,0 +1,44 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  azureSubscription: 'azure-conn'
+  appName: 'demologindash'
+
+steps:
+- script: |
+    echo "=== Repo structure ==="
+    find . -type f | grep -v ".git"
+  displayName: 'Show repo files'
+
+- script: |
+    ls -la
+    cd "DASHBORD PAGE"
+    ls -la
+    zip -r ../app.zip .
+    cd ..
+    echo "=== Zip contents ==="
+    unzip -l app.zip
+  displayName: 'Zip static site'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy to Azure'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: $(azureSubscription)
+    appType: 'webApp'
+    WebAppName: $(appName)
+    packageForLinux: 'app.zip'
+    enableCustomDeployment: true
+    DeploymentType: 'zipDeploy'
+    TakeAppOfflineFlag: true
+```
+
