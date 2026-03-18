@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -14,23 +9,23 @@ variables:
   appName: 'demologindash'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+- script: |
+    echo "=== Repo structure ==="
+    find . -type f | grep -v ".git"
+  displayName: 'Show repo files'
 
 - script: |
-    npm install
-    npm run build || echo "No build step"
-  displayName: 'Install and build'
-
-- script: |
-    zip -r app.zip .
-  displayName: 'Archive project'
+    cd "DASHBORD PAGE"
+    zip -r ../app.zip .
+    cd ..
+    echo "=== Zip contents ==="
+    unzip -l app.zip
+  displayName: 'Zip static site only'
 
 - task: AzureWebApp@1
   displayName: 'Deploy to Azure App Service'
   inputs:
     azureSubscription: $(azureSubscription)
+    appType: webApp
     appName: $(appName)
     package: app.zip
